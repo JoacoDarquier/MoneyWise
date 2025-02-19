@@ -1,0 +1,297 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - MoneyWise</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'js/tailwind.config.js' %}"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="bg-gradient-to-br from-lime-primary/5 to-white min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div class="mb-4 md:mb-0">
+                <h1 class="text-2xl font-bold text-wise-black flex items-center">
+                    <svg class="w-6 h-6 text-lime-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Welcome, {{ user.username }}
+                </h1>
+                <p class="text-gray-500 text-sm">Financial Overview</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="{% url 'export-excel' %}?period={{ current_period }}" 
+                    class="text-lime-primary hover:text-lime-dark font-medium flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    </svg>
+                    Export to Excel
+                </a>
+                <a href="{% url 'logout' %}" class="text-lime-primary hover:text-lime-dark font-medium flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Total Income</h3>
+                        <p class="mt-2 text-3xl font-semibold text-green-600">${{ total_income|floatformat:2 }}</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Total Expenses</h3>
+                        <p class="mt-2 text-3xl font-semibold text-red-600">${{ total_expense|floatformat:2 }}</p>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Current Balance</h3>
+                        <p class="mt-2 text-3xl font-semibold text-wise-black">${{ balance|floatformat:2 }}</p>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Transactions -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Expense Chart -->
+            <div class="bg-white p-6 rounded-xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
+                <h2 class="text-lg font-semibold text-wise-black mb-4">Expense Breakdown</h2>
+                <div id="expenseChart" class="w-full"></div>
+            </div>
+
+            <!-- Transactions Section -->
+            <div class="bg-white p-6 rounded-xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-lg font-semibold text-wise-black">Recent Transactions</h2>
+                    <div class="flex items-center gap-4">
+                        <!-- Filtro de período -->
+                        <form method="get" class="flex items-center gap-2">
+                            <select name="period" id="period" 
+                                    class="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-lime-primary"
+                                    onchange="this.form.submit()">
+                                <option value="all" {% if current_period == 'all' %}selected{% endif %}>All Time</option>
+                                <option value="month" {% if current_period == 'month' %}selected{% endif %}>This Month</option>
+                                <option value="week" {% if current_period == 'week' %}selected{% endif %}>This Week</option>
+                            </select>
+                        </form>
+                        
+                        <a href="{% url 'add-transaction' %}" 
+                            class="bg-lime-primary hover:bg-lime-dark text-white px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap">
+                            + Add Transaction
+                        </a>
+                    </div>
+                </div>
+
+                {% if object_list %}
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="text-xs text-gray-500 border-b">
+                            <tr>
+                                <th class="pb-3 text-left">Date</th>
+                                <th class="pb-3 text-left">Type</th>
+                                <th class="pb-3 text-left">Category</th>
+                                <th class="pb-3 text-left">Description</th>
+                                <th class="pb-3 text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-gray-200">
+                            {% for transaction in object_list %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs text-gray-500">{{ transaction.date|date:"D" }}</span>
+                                        {{ transaction.date|date:"M d" }}
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 rounded-full text-xs 
+                                        {% if transaction.transaction_type == 'Income' %}
+                                            bg-green-100 text-green-700
+                                        {% else %}
+                                            bg-red-100 text-red-700
+                                        {% endif %}">
+                                        {{ transaction.transaction_type }}
+                                    </span>
+                                </td>
+                                <td class="py-3">
+                                    {% if transaction.transaction_type == 'Income' %}
+                                        {{ transaction.category_income }}
+                                    {% else %}
+                                        {{ transaction.category_expense }}
+                                    {% endif %}
+                                </td>
+                                <td class="py-3">{{ transaction.description|truncatechars:20 }}</td>
+                                <td class="py-3 text-right font-medium
+                                    {% if transaction.transaction_type == 'Income' %}
+                                        text-green-600
+                                    {% else %}
+                                        text-red-600
+                                    {% endif %}">
+                                    ${{ transaction.amount|floatformat:2 }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <div class="mt-6 flex items-center justify-between border-t border-gray-200 pt-4">
+                        <div class="hidden sm:block">
+                            <p class="text-sm text-gray-500">
+                                Showing transactions 
+                                <span class="font-medium">{{ page_obj.start_index }}</span> 
+                                to 
+                                <span class="font-medium">{{ page_obj.end_index }}</span> 
+                                of 
+                                <span class="font-medium">{{ paginator.count }}</span>
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-end gap-2">
+                            {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.period %}&period={{ request.GET.period }}{% endif %}" 
+                                class="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-500 hover:text-lime-primary transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                                Previous
+                            </a>
+                            {% endif %}
+
+                            <div class="hidden md:flex gap-1">
+                                {% for num in paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <span class="px-3 py-2 text-sm font-medium bg-lime-primary text-white rounded-lg">
+                                            {{ num }}
+                                        </span>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <a href="?page={{ num }}{% if request.GET.period %}&period={{ request.GET.period }}{% endif %}"
+                                            class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-lime-primary hover:bg-lime-primary/10 rounded-lg transition-colors">
+                                            {{ num }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.period %}&period={{ request.GET.period }}{% endif %}" 
+                                class="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-500 hover:text-lime-primary transition-colors">
+                                Next
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="text-center p-8 bg-gray-50 rounded-lg">
+                    <p class="text-gray-500 mb-4">No transactions found</p>
+                    <a href="{% url 'add-transaction' %}" class="text-lime-primary hover:text-lime-dark font-medium">
+                        Add your first transaction →
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Expense Chart Data
+        const expenseData = {
+            values: JSON.parse('{{ expense_amounts|safe }}'),
+            labels: JSON.parse('{{ expense_categories|safe }}'),
+            type: 'pie',
+            marker: {
+                colors: [
+                    '#1f77b4',
+                    '#ff7f0e', 
+                    '#2ca02c', 
+                    '#d62728',
+                    '#9467bd',  
+                    '#8c564b', 
+                    '#e377c2',  
+                    '#7f7f7f', 
+                    '#bcbd22', 
+                    '#17becf' 
+                ],
+            },
+            textinfo: 'percent+label',
+            hole: .4,
+            hoverinfo: 'label+percent+value',
+            textfont: {
+                family: 'Inter, sans-serif',
+                size: 14,
+                color: '#1A1A1A'
+            }
+        };
+
+        const layout = {
+            height: 400,
+            showlegend: true,
+            legend: {
+                orientation: 'h',
+                y: -0.2,
+                font: {
+                family: 'Inter, sans-serif',
+                size: 12,
+                color: '#666'
+                }
+            },
+            margin: {t: 20, b: 80, l: 20, r: 20},
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            hoverlabel: {
+                bgcolor: '#FFF',
+                font: {
+                    family: 'Inter, sans-serif',
+                    size: 12
+                }
+            }
+        };
+
+        if (expenseData.values.length > 0) {
+            Plotly.newPlot('expenseChart', [expenseData], layout);
+        } else {
+            document.getElementById('expenseChart').innerHTML = '<div class="text-center p-8"><p class="text-gray-500">No expense data available</p></div>';
+        }
+    </script>
+</body>
+</html>
