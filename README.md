@@ -52,7 +52,7 @@ MoneyWise is a comprehensive personal finance management system built with Djang
   - JSON for data processing
 
 **Demo**
-[Video link]([https://youtu.be/xIA6eF1NCjs](https://youtu.be/mSJ5vRp9cD0))
+- [Video link](https://youtu.be/mSJ5vRp9cD0)
 
 **Security Features**
 - CSRF Protection
