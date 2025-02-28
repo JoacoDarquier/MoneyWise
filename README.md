@@ -51,6 +51,8 @@ MoneyWise is a comprehensive personal finance management system built with Djang
   - XlsxWriter for Excel export
   - JSON for data processing
 
+**Demo**
+[Video link]([https://youtu.be/xIA6eF1NCjs](https://youtu.be/mSJ5vRp9cD0))
 
 **Security Features**
 - CSRF Protection
@@ -68,7 +70,4 @@ MoneyWise is a comprehensive personal finance management system built with Djang
 
 
 Author
-Joaquin Darquier
-
-GitHub: @JoacoDarquier
 LinkedIn: [Joaquin Darquier](https://www.linkedin.com/in/joacodarquier/)
